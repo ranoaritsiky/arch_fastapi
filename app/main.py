@@ -43,3 +43,10 @@ async def get_all_users(db: Session = Depends(get_db)):
         return {
             "Error": e
         }
+
+
+@app.get("/")
+async def root(self):
+    return{
+        "message": "hello there"
+    }
