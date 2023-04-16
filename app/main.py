@@ -27,7 +27,7 @@ async def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.get("/users/", response_model=schemas.User)
+@app.get("/users/")
 async def get_all_users(db: Session = Depends(get_db)):
     try:
         all_users = crud.get_users(db)
@@ -46,7 +46,22 @@ async def get_all_users(db: Session = Depends(get_db)):
 
 
 @app.get("/")
-async def root(self):
-    return{
-        "message": "hello there"
-    }
+async def main():
+    try:
+        return {
+            "message": "welcome to my apps"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e)
+    
+
+@app.post("/users/", response_model=schemas.User)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), ):
+    get_user = crud.get_user_by_email(db, user_email = user.email)
+    if not get_user:
+        user = crud.create_user(db, user = user)
+        return {
+            "message": user
+        }
+    raise HTTPException(status_code=400, detail="Email already registered")
+    

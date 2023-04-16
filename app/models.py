@@ -12,6 +12,9 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     
     items = relationship("Item", back_populates="owner")
+    
+    class Config:
+        orm_mode = True
 
 class Item(Base):
     __tablename__ = "items"
