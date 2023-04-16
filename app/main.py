@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.dialects.oracle.dictionary import all_users
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
+from . import crud, models, schemas, common
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -58,6 +58,12 @@ async def main():
 @app.post("/users/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), ):
     get_user = crud.get_user_by_email(db, user_email = user.email)
+    
+    check_email = common.check_email_format(user.email)
+
+    if not check_email:
+        raise HTTPException(status_code=400, detail="Email format is not valid")
+
     if not get_user:
         user = crud.create_user(db, user = user)
         return {
