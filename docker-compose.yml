@@ -9,6 +9,9 @@ services:
       - "8099:80"
     depends_on:
       - db
+    command: apt-get update
+    command: apt-get install sudo
+    command: apt-get install nano
 
   db:
     image: postgres:13
