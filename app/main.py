@@ -56,9 +56,9 @@ async def main():
     
 
 @app.post("/users/", response_model=schemas.User)
-async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), ):
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db) ):
     get_user = crud.get_user_by_email(db, user_email = user.email)
-    
+
     check_email = common.check_email_format(user.email)
 
     if not check_email:
@@ -71,3 +71,12 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), )
         }
     raise HTTPException(status_code=400, detail="Email already registered")
     
+
+
+@app.get("/search_user_by_email/", response_model=schemas.User)
+async def search_user_by_email(user: schemas.UserBase, db: Session = Depends(get_db)):
+    user_email = crud.get_user_by_email(db, user_email=user.email)
+    if user_email:
+        return{"Message": user_email}
+    else:
+        raise HTTPException(status_code=400, detail="Email does not exist")
